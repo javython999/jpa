@@ -10,6 +10,7 @@ import jpabook.jpashop.repository.order.query.OrderFlatDto;
 import jpabook.jpashop.repository.order.query.OrderItemQueryDto;
 import jpabook.jpashop.repository.order.query.OrderQueryDto;
 import jpabook.jpashop.repository.order.query.OrderQueryRepository;
+import jpabook.jpashop.service.query.OrderQueryService;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,6 +28,7 @@ public class OrderApiController {
 
     private final OrderRepository orderRepository;
     private final OrderQueryRepository orderQueryRepository;
+    private final OrderQueryService orderQueryService;
 
     @GetMapping("/api/v1/orders")
     public List<Order> ordersV1() {
@@ -88,6 +90,11 @@ public class OrderApiController {
         return flats.stream()
                 .collect(groupingBy(o -> new OrderQueryDto(o.getOrderId(), o.getName(), o.getOrderDate(), o.getStatus(), o.getAddress()), mapping(o -> new OrderItemQueryDto(o.getOrderId(), o.getItemName(), o.getOrderPrice(), o.getCount()), toList())
                 )).entrySet().stream().map(e -> new OrderQueryDto(e.getKey().getOrderId(), e.getKey().getName(), e.getKey().getOrderDate(), e.getKey().getStatus(), e.getKey().getAddress(), e.getValue())).collect(toList());
+    }
+
+    @GetMapping("/api/osiv_off/orders")
+    public List<jpabook.jpashop.service.query.OrderDto> osivOff() {
+        return orderQueryService.osivOff();
     }
 
     @Getter
